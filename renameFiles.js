@@ -3,24 +3,39 @@ const path = require('path');
 
 function renameMonth(file) {
   let newFileName = file;
-  newFileName = newFileName.replace('_January_', '_01');
-  newFileName = newFileName.replace('_February_', '_02');
-  newFileName = newFileName.replace('_March_', '_03');
-  newFileName = newFileName.replace('_April_', '_04');
-  newFileName = newFileName.replace('_May_', '_05');
-  newFileName = newFileName.replace('_June_', '_06');
-  newFileName = newFileName.replace('_July_', '_07');
-  newFileName = newFileName.replace('_August_', '_08');
-  newFileName = newFileName.replace('_September_', '_09');
-  newFileName = newFileName.replace('_October_', '_10');
-  newFileName = newFileName.replace('_November_', '_11');
-  newFileName = newFileName.replace('_December_', '_12');
-  newFileName = newFileName.replace('_Winter_', '_01');
-  newFileName = newFileName.replace('_Spring_', '_04');
-  newFileName = newFileName.replace('_Summer_', '_07');
-  newFileName = newFileName.replace('_Fall_', '_10');
+  newFileName = newFileName.replace('_January', '_01');
+  newFileName = newFileName.replace('_February', '_02');
+  newFileName = newFileName.replace('_March', '_03');
+  newFileName = newFileName.replace('_April', '_04');
+  newFileName = newFileName.replace('_May', '_05');
+  newFileName = newFileName.replace('_June', '_06');
+  newFileName = newFileName.replace('_July', '_07');
+  newFileName = newFileName.replace('_August', '_08');
+  newFileName = newFileName.replace('_September', '_09');
+  newFileName = newFileName.replace('_October', '_10');
+  newFileName = newFileName.replace('_November', '_11');
+  newFileName = newFileName.replace('_December', '_12');
+  newFileName = newFileName.replace('_Winter', '_01');
+  newFileName = newFileName.replace('_Spring', '_04');
+  newFileName = newFileName.replace('_Summer', '_07');
+  newFileName = newFileName.replace('_Fall', '_10');
   return newFileName;
 }
+
+const yearCount = {
+  192: 0,
+  193: 0,
+  194: 0,
+  195: 0,
+  196: 0,
+  197: 0,
+  198: 0,
+  199: 0,
+  200: 0,
+  201: 0,
+};
+
+let unknown = 0;
 
 // Function to rename files and directories recursively
 function renameFiles(directoryPath) {
@@ -41,6 +56,19 @@ function renameFiles(directoryPath) {
 
       renameFiles(newDirectoryPath);
     } else if (item.toLowerCase().endsWith('.jpg')) {
+      Object.keys(yearCount).forEach((year) => {
+        if (item.startsWith(year) && !item.endsWith('_b.jpg')) {
+          yearCount[year]++;
+        }
+      });
+
+      if (
+        !Object.keys(yearCount).some((year) => item.startsWith(year)) &&
+        !item.endsWith('_b.jpg')
+      ) {
+        unknown++;
+      }
+
       let newFileName = renameMonth(item);
 
       // Check if it doesn't end with "_a.jpg" or "_b.jpg"
@@ -62,3 +90,9 @@ function renameFiles(directoryPath) {
 const rootDirectory = '/Users/willpreble/Desktop/obrien family archive';
 
 renameFiles(rootDirectory);
+
+console.log({
+  yearCount,
+  unknown,
+  total: Object.values(yearCount).reduce((a, b) => a + b, 0) + unknown,
+});
